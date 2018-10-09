@@ -6,25 +6,59 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggridges)
+library(patchwork)
+library(p8105.datasets)
+library("dplyr")
+library(viridis)
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
 ```
 
-## R Markdown
+# Problem 1
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+The BRFSS dataset includes data from the Behavioral Risk Factors Surveillance System from 2002-2010. This dataset is located in the `p8105.datasets` package. The same dataset was used in homework 2.  
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+## Import and Clean Dataset
+Loaded and cleaned BRFSS data from `p9105.datasets` package: 
 
-```{r cars}
-summary(cars)
+```{r load BRFSS Data}
+brfss_data = p8105.datasets::brfss_smart2010 %>% 
+    janitor::clean_names() %>%
+    filter(topic == "Overall Health") %>% 
+    group_by(response)
+  
 ```
 
-## Including Plots
+The following steps were taken to clean the dataset: 
 
-You can also embed plots, for example:
+*  Cleaned variable names using `janitor::clean_names`.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+*  Verified variable types imported correctly.
+
+*  Filtered data to only consider "Overall Health" topic.
+
+## Questions
+
+*  **In 2002, which states were observed at 7 locations?**
+
+```{r}
+brfss_data %>% 
+  filter(year == 2002) %>% 
+  group_by(locationabbr) %>% 
+  summarize(count_locations = n_distinct(locationdesc)) %>% 
+  filter(count_locations == 7) %>% 
+  knitr::kable(digits = 1)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.
+Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.
+For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.
