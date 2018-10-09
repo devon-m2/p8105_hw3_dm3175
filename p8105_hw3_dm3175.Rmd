@@ -31,7 +31,7 @@ Loaded and cleaned BRFSS data from `p9105.datasets` package:
 brfss_data = p8105.datasets::brfss_smart2010 %>% 
     janitor::clean_names() %>%
     filter(topic == "Overall Health") %>% 
-    group_by(response)
+    mutate(response = factor(response, levels = c("Excellent", "Very good", "Good", "Fair", "Poor")))
   
 ```
 
@@ -42,6 +42,8 @@ The following steps were taken to clean the dataset:
 *  Verified variable types imported correctly.
 
 *  Filtered data to only consider "Overall Health" topic.
+
+*  Using the `factor` function, organized the responses as a factor ordered with 5 levels: `Excellent`, `Very good`, `Good`, `Fair`, and `Poor`. 
 
 ## Questions
 
