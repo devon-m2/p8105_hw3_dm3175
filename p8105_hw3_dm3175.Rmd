@@ -81,5 +81,15 @@ brfss_data %>%
 
 *  **Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.**
 
+```{r}
+brfss_data %>% 
+  filter(locationabbr == "NY" & 
+           (year == 2002 | year == 2006 | year == 2010) &
+           response == "Excellent") %>% 
+  group_by(year) %>% 
+  summarize(mean_excellent_response = mean(data_value),
+            sd_excellent_response = sd(data_value)) %>%
+  knitr::kable(digits = 1)
+```
 
 *  **For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.**
