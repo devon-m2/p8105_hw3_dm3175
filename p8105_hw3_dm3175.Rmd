@@ -62,6 +62,9 @@ brfss_data %>%
 
 
 *  **Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.**
+
+The following spaghetti plot displays the number of locations in each state from 2002 to 2010. The states are differentiated by colors as presented in the legend. 
+
 ```{r number of locations in each state}
 brfss_data %>%
   group_by(year, locationabbr) %>% 
@@ -81,6 +84,8 @@ brfss_data %>%
 
 *  **Make a table showing, for the years 2002, 2006, and 2010, the mean and standard deviation of the proportion of “Excellent” responses across locations in NY State.**
 
+The following table displays the mean and standard deviation of the proportion of "Excellent" responses across locations in NY State. 
+
 ```{r}
 brfss_data %>% 
   filter(locationabbr == "NY" & 
@@ -93,3 +98,61 @@ brfss_data %>%
 ```
 
 *  **For each year and state, compute the average proportion in each response category (taking the average across locations in a state). Make a five-panel plot that shows, for each response category separately, the distribution of these state-level averages over time.**
+*****FINISH*****
+
+```{r}
+brfss_data %>%
+  group_by(year, locationabbr, response) %>% 
+  summarize(mean_response = mean(data_value))
+
+    
+```
+
+
+# Problem 2
+
+The Instacart Online Grocery Shopping Dataset (Instacart) from 2017 contains data from an online grocery service that permits shopping from local stores online, delivering groceries quickly. The dataset includes online order data from more than 200,000 users.   
+
+```{r load instacart data}
+instacart_data = p8105.datasets::instacart %>% 
+    janitor::clean_names()
+    
+```
+
+
+## Description of dataset
+
+### Variable Descriptions
+The following is a list of all the variables within the dataset and corresponding descriptions for reference taken from the dataset description on http://p8105.com/dataset_instacart.html. 
+
+*  `order_id`: order identifier
+*  `product_id`: product identifier
+*  `add_to_cart_order`: order in which each product was added to cart
+*  `reordered`: 1 if this prodcut has been ordered by this user in the past, 0 otherwise
+*  `user_id`: customer identifier
+*  `eval_set`: which evaluation set this order belongs in (Note that the data for use in this class is exclusively from the “train” eval_set)
+*  `order_number`: the order sequence number for this user (1=first, n=nth)
+*  `order_dow`: the day of the week on which the order was placed
+*  `order_hour_of_day`: the hour of the day on which the order was placed
+*  `days_since_prior_order`: days since the last order, capped at 30, NA if order_number=1
+*  `product_name`: name of the product
+*  `aisle_id`: aisle identifier
+*  `department_id`: department identifier
+*  `aisle`: the name of the aisle
+*  `department`: the name of the department
+
+
+## Questions
+
+*  **How many aisles are there, and which aisles are the most items ordered from?**
+
+
+* **Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it**
+
+
+* **Make a table showing the most popular item aisles "baking ingredients", "dog food care", and "packages vegetables fruits"**
+
+
+* **Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e., produce a 2 x 7 table)**
+
+
