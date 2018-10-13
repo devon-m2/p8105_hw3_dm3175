@@ -113,6 +113,8 @@ brfss_data %>%
 
 The Instacart Online Grocery Shopping Dataset (Instacart) from 2017 contains data from an online grocery service that permits shopping from local stores online, delivering groceries quickly. The dataset includes online order data from more than 200,000 users.   
 
+## Load dataset
+
 ```{r load instacart data}
 instacart_data = p8105.datasets::instacart %>% 
     janitor::clean_names()
@@ -207,5 +209,42 @@ instacart_data %>%
   knitr::kable(digits = 3)
 ```
 
+# Problem 3
+
+## Load dataset
+
+```{r}
+NOAA_data = p8105.datasets::ny_noaa %>% 
+    janitor::clean_names()
+```
+
+## Description of dataset
+
+The NOAA dataset contains data from the NOAA National Climatic Data Center retrieved on August 15, 2017. The dataset contains `r nrow(NOAA_data)` rows and `r ncol(NOAA_data)` columns. 
+
+The dataset contains the following key variables: 
+
+* `id`: ID of the weather center
+*  `date`: Date of observation
+*  `prcp`: Precipitation level (tenths of mm)
+*  `snow`: Snowfall (mm)
+*  `snwd`: Snow depth (mm)
+*  `tmax`: Maximum temperature (tenths of degrees C)
+*  `tmin`: Minimum temperature (tenths of degrees C)
+
+Each of the weather stations collect a different combination of variables listed above. For reference, there are 
 
 
+## Questions
+
+* **Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?**
+
+
+
+* **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
+
+boxplot 
+
+* **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
+
+density plot
