@@ -119,8 +119,10 @@ instacart_data = p8105.datasets::instacart %>%
     
 ```
 
-
 ## Description of dataset
+
+The instacart dataset 
+
 
 ### Variable Descriptions
 The following is a list of all the variables within the dataset and corresponding descriptions for reference taken from the dataset description on http://p8105.com/dataset_instacart.html. 
@@ -146,13 +148,32 @@ The following is a list of all the variables within the dataset and correspondin
 
 *  **How many aisles are there, and which aisles are the most items ordered from?**
 
+There are `r distinct(instacart_data, aisle, .keep_all = TRUE) %>% nrow()` aisles noted in the dataset. The top 10 most frequently used aisles are displayed in the table below. These represent the aisles where the most ordered items originate from. The top three aisles are **fresh vegetables, fresh fruits, and packaged vegetable fruits**. 
+
+```{r}
+instacart_data %>% 
+  group_by(aisle) %>% 
+  summarize(distinct_aisle = n()) %>%
+  filter(min_rank(desc(distinct_aisle)) < 11) %>% 
+  knitr::kable(digits = 1)
+```
+
 
 * **Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it**
+The following plot displays the number of items ordered in each aisle. 
+
+```{r}
+
+```
 
 
 * **Make a table showing the most popular item aisles "baking ingredients", "dog food care", and "packages vegetables fruits"**
 
 
 * **Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e., produce a 2 x 7 table)**
+
+```{r}
+
+```
 
 
