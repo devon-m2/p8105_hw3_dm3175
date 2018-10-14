@@ -220,7 +220,7 @@ NOAA_data = p8105.datasets::ny_noaa %>%
 
 ## Description of dataset
 
-The NOAA dataset contains data from the NOAA National Climatic Data Center retrieved on August 15, 2017. The dataset contains `r nrow(NOAA_data)` rows and `r ncol(NOAA_data)` columns. The earliest observation time point began in `r min(NOAA_data$date)` and the last date of observation was `r max(NOAA_data$date)`.  
+The NOAA dataset contains data from the NOAA National Climatic Data Center retrieved on August 15, 2017 specifically from New York state. The dataset contains `r nrow(NOAA_data)` rows and `r ncol(NOAA_data)` columns. The earliest observation time point began in `r min(NOAA_data$date)` and the last date of observation was `r max(NOAA_data$date)`.  
 
 The dataset contains the following key variables: 
 
@@ -247,6 +247,7 @@ The large number of missing values for `tmax` and `tmin` relative to the full si
 
 * **Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?**
 
+Next, the dataset was cleaned: 
 ```{r data cleaning NOAA}
 clean_NOAA_data = NOAA_data %>% 
   separate(date, into = c("year", "month", "day"), sep = "-") %>% 
@@ -254,19 +255,47 @@ clean_NOAA_data = NOAA_data %>%
          tmax = as.double(tmax),
          prcp = as.double(prcp), 
          snow = as.double(snow),
-         snwd = as.double(snwd)) %>% 
+         snwd = as.double(snwd),
+         month = as.integer(month)) %>% 
   mutate(tmax_celsius = tmax/10,
-         tmin_celsius = tmin/10)
-  
-  
+         tmin_celsius = tmin/10,
+         prcp_mm = prcp/10,
+         month = month.name[month]) %>%
+  select(id, day, month, year, snow, snwd, prcp_mm, tmax_celsius, tmin_celsius)
+
+```
+
+The following steps were completed to clean the dataset: 
+
+*  Separated the date column into separate variables for `year`, `month` and `day`. 
+*  Converted the month number to a month name. 
+*  Converted the weather measurement variables into "double" type variables. 
+*  Converted the unit for tmax, tmin and precipitation from tenths of degrees Celsius to degrees Celsius by diving the value by 10. This makes ensures the values are more understandable for a general audience. 
+*  Reordered the columns in a more logical way using the `select` function. 
+
+The most commonly observed values for snowfall was **0 mm**. The following is a count of the number of **0 mm** observations for snowfall variable `snow`. No snowfall is the most commonly observed value because for most days of observation in New York State, snowfall should be unlikely.  
+
+```{r}
+clean_NOAA_data %>% 
+  count(snow) %>% 
+  pull(n) %>% 
+  max()
+```
+
+* **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
+
+```{r max temp in Jan and July}
+clean_NOAA_data %>%
+  filter(month == "January" | month == "July") %>%
+  group_by(id, year, month) %>% 
+  summarize(mean_tmax = mean(tmax_celsius)) %>%
+  ggplot(aes(x = year, y = mean_tmax)) +
+  geom_point() +
+  facet_grid(. ~ month)
 
 
 ```
 
-
-* **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
-
-boxplot 
 
 * **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
