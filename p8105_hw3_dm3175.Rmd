@@ -119,7 +119,6 @@ brfss_data %>%
     )
 ```
 
-
 # Problem 2
 
 The Instacart Online Grocery Shopping Dataset (Instacart) from 2017 contains data from an online grocery service that permits shopping from local stores online, delivering groceries quickly. The dataset includes online order data from more than 200,000 users. This dataset is located in the `p8105.datasets` package.
@@ -135,11 +134,10 @@ instacart_data = p8105.datasets::instacart %>%
 
 ## Description of dataset
 
-The instacart dataset 
-
+The instacart dataset contains grocery delivery data from `r distinct(instacart_data, order_id, .keep_all = TRUE) %>% nrow()` distinct online orders, and `r nrow(instacart_data)` total rows (representing all separate products processed during all orders). The dataset includes `r distinct(instacart_data, product_id, .keep_all = TRUE) %>% nrow()` distinct product types purchased from `r distinct(instacart_data, aisle, .keep_all = TRUE) %>% nrow()` distinct aisles and `r distinct(instacart_data, department_id, .keep_all = TRUE) %>% nrow()` distinct departments.
 
 ### Variable Descriptions
-The following is a list of all the variables within the dataset and corresponding descriptions for reference taken from the dataset description on http://p8105.com/dataset_instacart.html. 
+The following is a list of all the variables (there are a total of `r ncol(instacart_data)` columns) within the dataset and corresponding descriptions for reference taken from the dataset description on http://p8105.com/dataset_instacart.html. 
 
 *  `order_id`: order identifier
 *  `product_id`: product identifier
