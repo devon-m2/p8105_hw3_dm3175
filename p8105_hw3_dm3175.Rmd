@@ -213,18 +213,18 @@ instacart_data %>%
 
 ## Load dataset
 
-```{r}
+```{r load NOAA dataset}
 NOAA_data = p8105.datasets::ny_noaa %>% 
     janitor::clean_names()
 ```
 
 ## Description of dataset
 
-The NOAA dataset contains data from the NOAA National Climatic Data Center retrieved on August 15, 2017. The dataset contains `r nrow(NOAA_data)` rows and `r ncol(NOAA_data)` columns. 
+The NOAA dataset contains data from the NOAA National Climatic Data Center retrieved on August 15, 2017. The dataset contains `r nrow(NOAA_data)` rows and `r ncol(NOAA_data)` columns. The earliest observation time point began in `r min(NOAA_data$date)` and the last date of observation was `r max(NOAA_data$date)`.  
 
 The dataset contains the following key variables: 
 
-* `id`: ID of the weather center
+*  `id`: ID of the weather center
 *  `date`: Date of observation
 *  `prcp`: Precipitation level (tenths of mm)
 *  `snow`: Snowfall (mm)
@@ -232,13 +232,36 @@ The dataset contains the following key variables:
 *  `tmax`: Maximum temperature (tenths of degrees C)
 *  `tmin`: Minimum temperature (tenths of degrees C)
 
-Each of the weather stations collect a different combination of variables listed above. For reference, there are 
+Each of the weather stations collect a different combination of variables listed above. This means that there are a significant amount of missing values throughout the dataset. The missing value counts for each variable are as follows: 
+
+*  Precipitation level (`prcp`) has `r sum(is.na(NOAA_data$prcp))` missing values. This represents `r sum(is.na(NOAA_data$prcp))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset.  
+*  Snowfall level (`snow`) has `r sum(is.na(NOAA_data$snow))` missing values. This represents `r sum(is.na(NOAA_data$snow))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
+*  Snow depth (`snwd`) has `r sum(is.na(NOAA_data$snwd))` missing values. This represents `r sum(is.na(NOAA_data$snwd))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
+*  Maximum temperature (`tmax`) has `r sum(is.na(NOAA_data$tmax))` missing values. This represents `r sum(is.na(NOAA_data$tmax))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
+*  Minimum temperature (`tmin`) has `r sum(is.na(NOAA_data$tmin))` missing values. This represents `r sum(is.na(NOAA_data$tmin))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
+
+The large number of missing values for `tmax` and `tmin` relative to the full size of the dataset make it difficult to track changes in temperature over time, and to get a clear sense of what the typical minimum and maximum temperature levels are at different stations. This similarly applies to the missing values for precipitation level, snowfall level and snow depth which make comparisons across stations and throughout time difficult. 
 
 
 ## Questions
 
 * **Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?**
 
+```{r data cleaning NOAA}
+clean_NOAA_data = NOAA_data %>% 
+  separate(date, into = c("year", "month", "day"), sep = "-") %>% 
+  mutate(tmin = as.double(tmin), 
+         tmax = as.double(tmax),
+         prcp = as.double(prcp), 
+         snow = as.double(snow),
+         snwd = as.double(snwd)) %>% 
+  mutate(tmax_celsius = tmax/10,
+         tmin_celsius = tmin/10)
+  
+  
+
+
+```
 
 
 * **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
