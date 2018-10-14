@@ -1,7 +1,7 @@
 ---
 title: "p8105_hw3_dm3175"
 author: "Devon Morgan"
-date: "10/9/2018"
+date: "10/15/2018"
 output: github_document
 ---
 
@@ -12,6 +12,7 @@ library(patchwork)
 library(p8105.datasets)
 library("dplyr")
 library(viridis)
+library(hexbin)
 knitr::opts_chunk$set(
   fig.width = 10,
   fig.asp = .6,
@@ -104,6 +105,7 @@ brfss_data %>%
 brfss_data %>%
   group_by(year, locationabbr, response) %>% 
   summarize(mean_response = mean(data_value))
+  
 
     
 ```
@@ -111,10 +113,11 @@ brfss_data %>%
 
 # Problem 2
 
-The Instacart Online Grocery Shopping Dataset (Instacart) from 2017 contains data from an online grocery service that permits shopping from local stores online, delivering groceries quickly. The dataset includes online order data from more than 200,000 users.   
+The Instacart Online Grocery Shopping Dataset (Instacart) from 2017 contains data from an online grocery service that permits shopping from local stores online, delivering groceries quickly. The dataset includes online order data from more than 200,000 users. This dataset is located in the `p8105.datasets` package.
 
 ## Load dataset
 
+Loaded the instacart dataset from `p9105.datasets` package:
 ```{r load instacart data}
 instacart_data = p8105.datasets::instacart %>% 
     janitor::clean_names()
@@ -210,9 +213,11 @@ instacart_data %>%
 ```
 
 # Problem 3
+Problem 3 uses data from the NOAA National Climatic Data Center describing weather patterns at different stations in New York State. This dataset is located in the `p8105.datasets` package.
 
 ## Load dataset
 
+Loaded the NY_NOAA dataset from `p9105.datasets` package:
 ```{r load NOAA dataset}
 NOAA_data = p8105.datasets::ny_noaa %>% 
     janitor::clean_names()
@@ -232,7 +237,7 @@ The dataset contains the following key variables:
 *  `tmax`: Maximum temperature (tenths of degrees C)
 *  `tmin`: Minimum temperature (tenths of degrees C)
 
-Each of the weather stations collect a different combination of variables listed above. This means that there are a significant amount of missing values throughout the dataset. The missing value counts for each variable are as follows: 
+Each of the weather stations collect a different combination of variables listed above. This means that there are a **significant amount of missing values** throughout the dataset. The missing value counts for each variable are as follows: 
 
 *  Precipitation level (`prcp`) has `r sum(is.na(NOAA_data$prcp))` missing values. This represents `r sum(is.na(NOAA_data$prcp))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset.  
 *  Snowfall level (`snow`) has `r sum(is.na(NOAA_data$snow))` missing values. This represents `r sum(is.na(NOAA_data$snow))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
@@ -240,8 +245,7 @@ Each of the weather stations collect a different combination of variables listed
 *  Maximum temperature (`tmax`) has `r sum(is.na(NOAA_data$tmax))` missing values. This represents `r sum(is.na(NOAA_data$tmax))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
 *  Minimum temperature (`tmin`) has `r sum(is.na(NOAA_data$tmin))` missing values. This represents `r sum(is.na(NOAA_data$tmin))/nrow(NOAA_data)` portion missing values for this variable out of the full dataset. 
 
-The large number of missing values for `tmax` and `tmin` relative to the full size of the dataset make it difficult to track changes in temperature over time, and to get a clear sense of what the typical minimum and maximum temperature levels are at different stations. This similarly applies to the missing values for precipitation level, snowfall level and snow depth which make comparisons across stations and throughout time difficult. 
-
+The large number of missing values for `tmax` and `tmin` relative to the full size of the dataset (displayed above) make it difficult to track changes in temperature over time, and to get a clear sense of what the typical minimum and maximum temperature levels are at different stations. This similarly applies to the missing values for precipitation level, snowfall level and snow depth which make comparisons across stations and throughout time difficult. 
 
 ## Questions
 
@@ -284,19 +288,56 @@ clean_NOAA_data %>%
 
 * **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
 
+The following plot shows the average max temperature in January and July in each station from 1981 to 2010. The average max temperature was taken over all daily Tmax measurements for the months of July and January per station. 
+
 ```{r max temp in Jan and July}
 clean_NOAA_data %>%
   filter(month == "January" | month == "July") %>%
   group_by(id, year, month) %>% 
-  summarize(mean_tmax = mean(tmax_celsius)) %>%
-  ggplot(aes(x = year, y = mean_tmax)) +
-  geom_point() +
-  facet_grid(. ~ month)
-
+  summarize(mean_tmax = mean(tmax_celsius, na.rm = TRUE)) %>%
+  ggplot(aes(x = year, y = mean_tmax, color = month)) +
+  geom_point(alpha = .5) +
+  facet_grid(. ~ month) +
+  theme(axis.text.x = element_text(angle=60, hjust=1)) +
+  labs(
+    title = "Average maximum temperature in January and July for each NY State station, 1981-2010",
+    x = "Year",
+    y = "Mean Tmax",
+    caption = "Data from the NY_NOAA package"
+  )
 
 ```
+
+As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010, although not always significantly. The following summary tables 
 
 
 * **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
-density plot
+density plot FINISH
+
+```{r}
+
+temp_hex_p = clean_NOAA_data %>%
+  ggplot(aes(x = tmax_celsius, y = tmin_celsius)) + 
+  geom_hex()
+
+
+
+temp_density_p = clean_NOAA_data %>%
+  gather(key = observation, value = temp, tmax_celsius:tmin_celsius) %>%
+  ggplot(aes(x = temp, fill = observation)) +
+  geom_density(alpha = .5) + 
+  viridis::scale_fill_viridis(discrete = TRUE) +
+  labs(
+    title = "Tmax vs. Tmin for all weather stations, 1981-2010",
+    x = "Temperature (C)",
+    caption = "Data from the NY_NOAA package"
+  )
+
+Snowfall_scatter_p = clean_NOAA_data %>% 
+  filter(snow > 0 & snow < 100) %>%
+  ggplot(aes(x = snow, y = year)) +
+  geom_density_ridges(scale = .85)
+
+```
+
