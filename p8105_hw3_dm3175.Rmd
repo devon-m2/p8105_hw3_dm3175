@@ -64,7 +64,7 @@ brfss_data %>%
 
 *  **Make a “spaghetti plot” that shows the number of locations in each state from 2002 to 2010.**
 
-The following spaghetti plot displays the number of locations in each state from 2002 to 2010. The states are differentiated by colors as presented in the legend. The graph illustrates that the number of sampling locations in each state fluctuated from 2002 to 2010 and does not remain constant. It also demonstrates that the majority of states had <10 sampling locations, with only 4 states sampling <15 locations. Florida had the greatest number of sampling locations with a peak of 44 locations in 2007. 
+The following spaghetti plot displays the number of locations in each state from 2002 to 2010. The states are differentiated by colors as presented in the legend. The graph illustrates that the number of sampling locations in each state fluctuated from 2002 to 2010 and does not remain constant. It also demonstrates that the majority of states had <10 sampling locations, with only 4 states sampling >15 locations. Florida had the greatest number of sampling locations with a peak of 44 locations in 2007. 
 
 ```{r number of locations in each state}
 brfss_data %>%
@@ -177,14 +177,14 @@ instacart_data %>%
 
 * **Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it**
 
-The following plot displays the number of items ordered in each aisle, arranged from aisles containing fewest number of items ordered to greatest number of items ordered.  
+The following plot displays the number of items ordered in each aisle, arranged from aisles containing fewest number of items ordered to greatest number of items ordered. The plot illustrates that the "Candy Chocolate" aisle has the most distinct products ordered, and "Bulk Dried Fruits" has the least.  
 
 ```{r items ordered per aisle}
 instacart_data %>%
   group_by(aisle) %>% 
   summarize(distinct_product = n_distinct(product_id)) %>%
   arrange(desc(distinct_product)) %>%
-  mutate(aisle = forcats::fct_reorder(aisle, distinct_product)) %>% 
+  mutate(aisle = forcats::fct_reorder(aisle, desc(distinct_product))) %>% 
   ggplot(aes(x = aisle, y = distinct_product), color = aisle) +
   geom_point() +
   labs(
@@ -296,6 +296,7 @@ clean_NOAA_data = NOAA_data %>%
 The following steps were completed to clean the dataset: 
 
 *  Separated the date column into separate variables for `year`, `month` and `day`. 
+
 *  Converted the month number to a month name. 
 
 *  Converted the weather measurement variables into "double" type variables.
@@ -315,15 +316,16 @@ clean_NOAA_data %>%
 
 * **Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?**
 
-The following plot shows the average max temperature in January and July in each station from 1981 to 2010. The average max temperature was taken over all daily Tmax measurements for the months of July and January per station. 
+The following plot shows the average max temperature in January and July in each station from 1981 to 2010. The average max temperature was taken over all daily Tmax measurements for the months of July and January per station. A spaghetti plot was chosen to display the fluctuations in each station's average maximum temperature from year-to-year, and more clearly show outliers where they appear.
 
 ```{r max temp in Jan and July}
 clean_NOAA_data %>%
   filter(month == "January" | month == "July") %>%
   group_by(id, year, month) %>% 
-  summarize(mean_tmax = mean(tmax_celsius, na.rm = TRUE)) %>%
-  ggplot(aes(x = year, y = mean_tmax, color = month)) +
-  geom_point(alpha = .5) +
+  summarize(mean_tmax = mean(tmax_celsius, na.rm = TRUE)) %>% 
+  ggplot(aes(x = year, y = mean_tmax, group = id, color = id)) +
+  geom_point() +
+  geom_line() +
   facet_grid(. ~ month) +
   theme(axis.text.x = element_text(angle=60, hjust=1)) +
   labs(
@@ -331,29 +333,37 @@ clean_NOAA_data %>%
     x = "Year",
     y = "Mean Tmax",
     caption = "Data from the NY_NOAA package"
-  )
+  ) +
+  theme(axis.text.x = element_text(angle = 90)) + theme(legend.position = "none")
 
 ```
 
 As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010, although not always significantly.
 
-
 * **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
-The following two-panel plot displays: 1) the Tmax vs. Tmin for the full dataset using a hexagonal scatterplot (`geom_hex()` function). This type of plot was chosen to avoid overplotting and better represent the values most represented in the dataset using a color gradient by count; and 2) a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year. 
+The following two-panel plot displays: 1) the Tmax vs. Tmin for the full dataset using a hexagonal scatterplot (`geom_hex()` function). This type of plot was chosen to avoid overplotting (due to the large amount of data in this dataset) and better represent the values most represented in the dataset using a color gradient by count; and 2) a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year. 
 
 ```{r}
 temp_hex_p = clean_NOAA_data %>%
-  ggplot(aes(x = tmax_celsius, y = tmin_celsius)) + 
+  ggplot(aes(x = tmin_celsius, y = tmax_celsius)) + 
   geom_hex() + 
-  labs(title = "Tmax vs. Tmin (in Celsius) for all NY weather stations, 1981-2010",
-       x = "Tmax (Celsius)",
-       y = "Tmin (Celsius)",
+  labs(title = "Max vs. Min Temperature (in Celsius) for all NY weather stations, 1981-2010",
+       x = "Min Temperature (Celsius)",
+       y = "Max Temperature (Celsius)",
       caption = "Data from the NY_NOAA package")
 
-clean_NOAA_data %>% 
+snowfall_density_p = clean_NOAA_data %>% 
   filter(snow > 0 & snow < 100) %>% 
   ggplot(aes(x = snow, y = year)) + 
-  geom_density_ridges(scale = .85) 
+  geom_density_ridges(scale = .85) +
+  scale_x_continuous(breaks = c(0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100)) +
+  labs(title = "Distribution of Snowfall (0 < Snowfall< 100 mm) by Year",
+       x = "Snowfall (mm)",
+       y = "Year",
+      caption = "Data from the NY_NOAA package")
+
+temp_hex_p + snowfall_density_p
 ```
 
+The plot of maximum vs. minimum temperature illustrates
