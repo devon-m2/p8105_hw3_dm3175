@@ -137,10 +137,33 @@ instacart_data = p8105.datasets::instacart %>%
 
 ## Description of dataset
 
-The instacart dataset contains grocery delivery data from `r distinct(instacart_data, order_id, .keep_all = TRUE) %>% nrow()` distinct online orders, and `r nrow(instacart_data)` total rows (representing all separate products processed during all orders). The dataset includes `r distinct(instacart_data, product_id, .keep_all = TRUE) %>% nrow()` distinct product types purchased from `r distinct(instacart_data, aisle, .keep_all = TRUE) %>% nrow()` distinct aisles and `r distinct(instacart_data, department_id, .keep_all = TRUE) %>% nrow()` distinct departments.
+The instacart dataset contains grocery delivery data from `r distinct(instacart_data, order_id, .keep_all = TRUE) %>% nrow()` distinct online orders, and `r nrow(instacart_data)` total rows (representing all products processed during all orders). The dataset includes `r distinct(instacart_data, product_id, .keep_all = TRUE) %>% nrow()` distinct product types purchased from `r distinct(instacart_data, aisle, .keep_all = TRUE) %>% nrow()` distinct aisles and `r distinct(instacart_data, department_id, .keep_all = TRUE) %>% nrow()` distinct departments.
+
+This dataset also includes information on the specific user placing the order (`user_id`), and whether the item was reordered or not (`reordered`). This type of information is helpful to see whether certain items are reordered more frequently than others by tracking the `reordered` value. In addition, the  `order_dow` and `order_hour_of_day` can be used to visualize order behavior by time and day of the week. This could be useful for the company to know the most popular times for ordering. 
+
+To illustrate the distribution of products ordered by department within the dataset, a bar chart of the number of products ordered by department was created. The top departments for products ordered are the "produce", "diary eggs", and "snacks" departments. Note that this plot is depicting all products ordered (counting products as many times as ordered), not the number of distinct product types ordered. 
+
+```{r}
+instacart_data %>% 
+  group_by(department) %>% 
+  summarize(n_department = n()) %>%
+  mutate(department = forcats::fct_reorder(department, desc(n_department))) %>% 
+  ggplot(aes(x = department, y = n_department)) +
+  geom_bar(stat = "identity") +
+  theme(axis.text.x=element_text(angle = 90, hjust = 1, vjust = 0.5),
+        text=element_text(size = 8)) +
+  labs(title = "Number of Products Ordered by Department",
+       x = "Department",
+       y = "Count of Products Ordered")
+  
+
+```
+
 
 ### Variable Descriptions
 The following is a list of all the variables (there are a total of `r ncol(instacart_data)` columns) within the dataset and corresponding descriptions for reference taken from the dataset description on http://p8105.com/dataset_instacart.html. 
+
+The most helpful variables for this analysis are the `order_id`, `product_id`, `order_dow`, `order_hour_of_day` and `aisle_id`. All variables are integers except for `eval_set`, `product_name`, `aisle`, and `department`, which are character variables. 
 
 *  `order_id`: order identifier
 *  `product_id`: product identifier
@@ -338,7 +361,7 @@ clean_NOAA_data %>%
 
 ```
 
-As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010 displaying a zig-zag pattern of temperatures rising and then falling from year-to-year, although not always significantly. The most striking outliers in January maximum temperatures occurred in 1982 and 2005 (where unusually low maximum temperatures were observed), and an unusually high temperature was recorded in January 2004. The most striking outlier in the July maximum temperatures occurred in 1988. Other years with unusually low July temperatures occurred in 1984 and 1988.
+As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010 displaying a zig-zag pattern of temperatures rising and then falling from year-to-year, although not always significantly. The temperatures appear to fluctuate more drastically in Janurary than June. The most striking outliers in January maximum temperatures occurred in 1982 and 2005 (where unusually low maximum temperatures were observed), and an unusually high temperature was recorded in January 2004. The most striking outlier in the July maximum temperatures occurred in 1988. Other years with unusually low July temperatures occurred in 1984 and 1988.
 
 * **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
@@ -352,7 +375,7 @@ temp_hex_p = clean_NOAA_data %>%
        x = "Min Temperature (Celsius)",
        y = "Max Temperature (Celsius)",
       caption = "Data from the NY_NOAA package") + 
-  theme(plot.title = element_text(size=14))
+  theme(plot.title = element_text(size=10))
 
 snowfall_density_p = clean_NOAA_data %>% 
   filter(snow > 0 & snow < 100) %>% 
@@ -363,7 +386,7 @@ snowfall_density_p = clean_NOAA_data %>%
        x = "Snowfall (mm)",
        y = "Year",
       caption = "Data from the NY_NOAA package") + 
-  theme(plot.title = element_text(size=14))
+  theme(plot.title = element_text(size=10))
 
 temp_hex_p + snowfall_density_p
 ```
