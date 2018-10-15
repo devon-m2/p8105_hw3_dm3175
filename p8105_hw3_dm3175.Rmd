@@ -338,7 +338,7 @@ clean_NOAA_data %>%
 
 ```
 
-As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010, although not always significantly.
+As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010, although not always significantly. The most striking outliers in January maximum temperatures occurred in 1982 and 2005 (where unusually low maximum temperatures were observed), and an unusually high temperature was recorded at one station in 2004. The most striking outlier in the July maximum temperatures occurred in 1988. Other years with outlier unusually low temperatures occurred in 1984 and 1988.  
 
 * **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
