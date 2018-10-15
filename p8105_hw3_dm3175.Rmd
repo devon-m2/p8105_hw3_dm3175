@@ -200,7 +200,7 @@ instacart_data %>%
 
 * **Make a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it**
 
-The following plot displays the number of items ordered in each aisle, arranged from aisles containing fewest number of items ordered to greatest number of items ordered. The plot illustrates that the "Fresh Vegetables" aisle has the most distinct products ordered, and "Beauty" has the least. The table in the previous question includes a summary of the top 10 aisles for count of products ordered.   
+The following plot displays the number of items ordered in each aisle, arranged from aisles containing greatest number of items ordered to least number of items ordered. The plot illustrates that the "Fresh Vegetables" aisle has the most distinct products ordered, and "Beauty" has the least. The table in the previous question includes a summary of the top 10 aisles for count of products ordered.   
 
 ```{r items ordered per aisle}
 instacart_data %>%
@@ -239,7 +239,7 @@ instacart_data %>%
 
 * **Make a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).**
 
-The following table shows the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Data is presented for each day of the week with a value of "0" in `order_dow` assumed to represent "Sunday". The day of week numerical values were renamed in the output table for improved readability. 
+The following table shows the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week. Data is presented for each day of the week with a value of "0" in `order_dow` assumed to represent "Sunday". The day of week numerical values were renamed in the output table for improved readability. The value for mean hour ordered was rounded to nearest whole hour to improve readability. 
 
 ```{r}
 hr_apple_coffee_dow = instacart_data %>%
@@ -256,7 +256,7 @@ hr_apple_coffee_dow %>%
          Thursday = `4`,
          Friday = `5`,
          Saturday = `6`) %>% 
-  knitr::kable(digits = 2)
+  knitr::kable(digits = 0)
 ```
 
 # Problem 3
