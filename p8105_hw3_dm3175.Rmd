@@ -119,7 +119,7 @@ brfss_data %>%
     )
 ```
 
-The boxplots illustrate that the distribution of mean state-level response averages remained fairly consistent from 2002 - 2010. This indicates that from year-to-year, the average proportion in each response category remained relatively constant when considering data from all states. The visualization does indicate that there are minor fluctuations from year-to-year.   
+The boxplots illustrate that the distribution of mean state-level response averages remained fairly consistent from 2002 - 2010. This indicates that from year-to-year, the average proportion in each response category remained relatively constant when considering data from all states. The visualization does indicate that there are minor fluctuations from year-to-year, and outliers were observed in some years (see outliers illustrated by dots in the boxplot). The plot also demonstrates that the "Very Good" response consistently makes up the largest proportion every year, and the "Poor" response makes up the smallest.   
 
 
 # Problem 2
@@ -305,7 +305,7 @@ The following steps were completed to clean the dataset:
 
 *  Reordered the columns in a more logical way using the `select` function. 
 
-The most commonly observed values for snowfall was **0 mm**. The following is a count of the number of **0 mm** observations for snowfall variable `snow`. No snowfall is the most commonly observed value because for most days of observation in New York State, snowfall should be unlikely.  
+The most commonly observed values for snowfall was **0 mm**. The following is a count of the number of **0 mm** observations for snowfall variable `snow`. No snowfall is the most commonly observed value because for most days of observation in New York State, snowfall should be unlikely because New York State is not a particularly cold climate with large quantities of snowfall.   
 
 ```{r}
 clean_NOAA_data %>% 
@@ -338,11 +338,11 @@ clean_NOAA_data %>%
 
 ```
 
-As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010, although not always significantly. The most striking outliers in January maximum temperatures occurred in 1982 and 2005 (where unusually low maximum temperatures were observed), and an unusually high temperature was recorded at one station in 2004. The most striking outlier in the July maximum temperatures occurred in 1988. Other years with outlier unusually low temperatures occurred in 1984 and 1988.  
+As expected, the plots illustrate that the average maximum temperature is consistently lower in Janurary than July. The average temperatures have fluctuated yearly from 1981-2010 displaying a zig-zag pattern of temperatures rising and then falling from year-to-year, although not always significantly. The most striking outliers in January maximum temperatures occurred in 1982 and 2005 (where unusually low maximum temperatures were observed), and an unusually high temperature was recorded in January 2004. The most striking outlier in the July maximum temperatures occurred in 1988. Other years with unusually low July temperatures occurred in 1984 and 1988.
 
 * **Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.**
 
-The following two-panel plot displays: 1) the Tmax vs. Tmin for the full dataset using a hexagonal scatterplot (`geom_hex()` function). This type of plot was chosen to avoid overplotting (due to the large amount of data in this dataset) and better represent the values most represented in the dataset using a color gradient by count; and 2) a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year. 
+The following two-panel plot displays: 1) the Tmax vs. Tmin for the full dataset using a hexagonal scatterplot (`geom_hex()` function). This type of plot was chosen to avoid overplotting (due to the large amount of data in this dataset) and better represent the values most represented in the dataset using a color gradient by count; and 2) a `ggridges` density plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year. The `geom_density_ridges` plot type was chosen because it allows for a clear comparison of distribution density plots at different time points. 
 
 ```{r}
 temp_hex_p = clean_NOAA_data %>%
@@ -351,7 +351,8 @@ temp_hex_p = clean_NOAA_data %>%
   labs(title = "Max vs. Min Temperature (in Celsius) for all NY weather stations, 1981-2010",
        x = "Min Temperature (Celsius)",
        y = "Max Temperature (Celsius)",
-      caption = "Data from the NY_NOAA package")
+      caption = "Data from the NY_NOAA package") + 
+  theme(plot.title = element_text(size=14))
 
 snowfall_density_p = clean_NOAA_data %>% 
   filter(snow > 0 & snow < 100) %>% 
@@ -361,9 +362,12 @@ snowfall_density_p = clean_NOAA_data %>%
   labs(title = "Distribution of Snowfall (0 < Snowfall< 100 mm) by Year",
        x = "Snowfall (mm)",
        y = "Year",
-      caption = "Data from the NY_NOAA package")
+      caption = "Data from the NY_NOAA package") + 
+  theme(plot.title = element_text(size=14))
 
 temp_hex_p + snowfall_density_p
 ```
 
-The plot of maximum vs. minimum temperature illustrates
+The plot of maximum vs. minimum temperature illustrates that the Tmax and Tmin are not extremely tightly correlated because they do not follow a straight positive line and there are some outlier points extending in either direction. However, using the color gradient of count, the plot depicts that the majority of the data points fall along a relatively straight line. 
+
+The plot of the distribution of snowfall amounts between 0 mm and 100 mm by year illustrates that the distributions of snowfall are very consistent from year-to-year. Some fluctuations appear in the distribution from 2006 - 2010, as there appear to be a larger amount of data points in the 0 - 20 mm snowfall category since 2006 compared to earlier years measured.  
